@@ -1,5 +1,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+![](https://media.giphy.com/media/h8a4IWLhE3BmO7jKm7/giphy.gif)
+
 ## Component Design
 
 ### `App`
