@@ -33,7 +33,7 @@ class Board extends Component {
   static defaultProps = {
     nrows: 5,
     ncols: 5,
-    chanceLightStartsOn: 5
+    chanceLightStartsOn: 0.25
   };
 
   constructor(props) {
@@ -43,8 +43,6 @@ class Board extends Component {
       hasWon: false,
       board: this.createBoard()
     };
-    this.createBoard = this.createBoard.bind(this);
-    this.flipCellsAround = this.flipCellsAround.bind(this);
   }
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
@@ -52,11 +50,11 @@ class Board extends Component {
     let board = [];
     // TODO: create array-of-arrays of true/false values
     for(let i = 0; i < this.props.nrows; i++){
-      board[i] = [];
+      let row = [];
       for(let j = 0; j < this.props.ncols; j++){
-        let randInt = Math.random() % 10;
-        randInt < this.props.chanceLightStartsOn ? board[i][j] = true : board[i][j] = false;
+        row.push(Math.random() < this.props.chanceLightStartsOn);
       }
+      board.push(row);
     }
     return board
   }
@@ -85,40 +83,54 @@ class Board extends Component {
     flipCell(y-1, x)
 
     // TODO: flip this cell and the cells around it
-
     // win when every cell is turned off
     // TODO: determine is the game has been won
-
-    let hasWon = false;
+    let hasWon = board.every(row => row.every(cell => !cell));
     this.setState({board, hasWon});
   }
 
-
-  /** Render game board or winning message. */
-
-  render() {
-    // if the game is won, just show a winning msg & render nothing else
-    // TODO
-    // make table board
-    let tblBoard = []; // will contain a bunch of table rows that have cells
-    for(let y = 0; y < this.props.nrows; y++){
+  makeTable() {
+    let tblBoard = [];
+    for (let y = 0; y < this.props.nrows; y++) {
       let row = [];
-      for(let x = 0; x < this.props.ncols; x++){
+      for (let x = 0; x < this.props.ncols; x++) {
         let coord = `${y}-${x}`;
         row.push(
           <Cell
             key={coord}
-            isLit = {this.board[y][x]}
-            flipCellsAroundMe = {() = > this.flipCellsAround(coord)}
-          />);
+            isLit={this.state.board[y][x]}
+            flipCellsAroundMe={() => this.flipCellsAround(coord)}
+          />
+        );
       }
       tblBoard.push(<tr key={y}>{row}</tr>);
     }
-
-    return(
-      <table>
+    return (
+      <table className='Board'>
         <tbody>{tblBoard}</tbody>
       </table>
+    );
+  }
+
+  /** Render game board or winning message. */
+  render() {
+    return (
+      <div>
+        {this.state.hasWon ? (
+          <div className='winner'>
+            <span className='neon-orange'>YOU</span>
+            <span className='neon-blue'>WIN!</span>
+          </div>
+        ) : (
+          <div>
+            <div className='Board-title'>
+              <div className='neon-orange'>Lights</div>
+              <div className='neon-blue'>Out</div>
+            </div>
+            {this.makeTable()}
+          </div>
+        )}
+      </div>
     );
   }
 }
