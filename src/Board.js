@@ -30,18 +30,34 @@ import './Board.css';
  **/
 
 class Board extends Component {
+  static defaultProps = {
+    nrows: 5,
+    ncols: 5,
+    chanceLightStartsOn: 5
+  };
 
   constructor(props) {
     super(props);
-
     // TODO: set initial state
+    this.state = {
+      hasWon: false,
+      board: this.createBoard()
+    };
+    this.createBoard = this.createBoard.bind(this);
+    this.flipCellsAround = this.flipCellsAround.bind(this);
   }
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
-
   createBoard() {
     let board = [];
     // TODO: create array-of-arrays of true/false values
+    for(let i = 0; i < this.props.nrows; i++){
+      board[i] = [];
+      for(let j = 0; j < this.props.ncols; j++){
+        let randInt = Math.random() % 10;
+        randInt < this.props.chanceLightStartsOn ? board[i][j] = true : board[i][j] = false;
+      }
+    }
     return board
   }
 
@@ -66,21 +82,31 @@ class Board extends Component {
     // win when every cell is turned off
     // TODO: determine is the game has been won
 
-    this.setState({board, hasWon});
+    // this.setState({board, hasWon});
   }
 
 
   /** Render game board or winning message. */
 
   render() {
-
     // if the game is won, just show a winning msg & render nothing else
-
     // TODO
-
     // make table board
+    let tblBoard = []; // will contain a bunch of table rows that have cells
+    for(let y = 0; y < this.props.nrows; y++){
+      let row = [];
+      for(let x = 0; x < this.props.ncols; x++){
+        let coord = `${y}-${x}`;
+        row.push(<Cell key={coord} isLit = {this.board[y][x]} />);
+      }
+      tblBoard.push(<tr key={y}>{row}</tr>);
+    }
 
-    // TODO
+    return(
+      <table>
+        <tbody>{tblBoard}</tbody>
+      </table>
+    );
   }
 }
 
